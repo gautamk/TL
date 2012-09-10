@@ -6,13 +6,13 @@ public class Main {
     String source = 
         "value1,value2,\"value3.1,\"\",value3.2\"" + "\n" + 
         "\"line\nbreak\",Bbb,end";
-    
+    source = "a,\"b,c";  
     // create an instance of the lexer
     CSVLexer lexer = new CSVLexer(new ANTLRStringStream(source));
         
     // wrap a token-stream around the lexer
     CommonTokenStream tokens = new CommonTokenStream(lexer);
-        
+    tokens.fill();
     // create the parser
     CSVParser parser = new CSVParser(tokens);
     

@@ -1,4 +1,4 @@
-// $ANTLR 3.4 CSV.g 2012-09-10 21:08:53
+// $ANTLR 3.4 CSV.g 2012-09-10 21:12:20
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -33,8 +33,8 @@ public class CSVLexer extends Lexer {
         try {
             int _type = Comma;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // CSV.g:17:3: ( ',' )
-            // CSV.g:17:6: ','
+            // CSV.g:24:3: ( ',' )
+            // CSV.g:24:6: ','
             {
             match(','); 
 
@@ -54,7 +54,7 @@ public class CSVLexer extends Lexer {
         try {
             int _type = LineBreak;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // CSV.g:21:3: ( ( '\\r' )? '\\n' | '\\r' )
+            // CSV.g:28:3: ( ( '\\r' )? '\\n' | '\\r' )
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -80,9 +80,9 @@ public class CSVLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // CSV.g:21:6: ( '\\r' )? '\\n'
+                    // CSV.g:28:6: ( '\\r' )? '\\n'
                     {
-                    // CSV.g:21:6: ( '\\r' )?
+                    // CSV.g:28:6: ( '\\r' )?
                     int alt1=2;
                     int LA1_0 = input.LA(1);
 
@@ -91,7 +91,7 @@ public class CSVLexer extends Lexer {
                     }
                     switch (alt1) {
                         case 1 :
-                            // CSV.g:21:6: '\\r'
+                            // CSV.g:28:6: '\\r'
                             {
                             match('\r'); 
 
@@ -106,7 +106,7 @@ public class CSVLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // CSV.g:22:6: '\\r'
+                    // CSV.g:29:6: '\\r'
                     {
                     match('\r'); 
 
@@ -128,10 +128,10 @@ public class CSVLexer extends Lexer {
         try {
             int _type = SimpleValue;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // CSV.g:26:3: ( (~ ( ',' | '\\r' | '\\n' | '\"' ) )+ )
-            // CSV.g:26:6: (~ ( ',' | '\\r' | '\\n' | '\"' ) )+
+            // CSV.g:33:3: ( (~ ( ',' | '\\r' | '\\n' | '\"' ) )+ )
+            // CSV.g:33:6: (~ ( ',' | '\\r' | '\\n' | '\"' ) )+
             {
-            // CSV.g:26:6: (~ ( ',' | '\\r' | '\\n' | '\"' ) )+
+            // CSV.g:33:6: (~ ( ',' | '\\r' | '\\n' | '\"' ) )+
             int cnt3=0;
             loop3:
             do {
@@ -186,12 +186,12 @@ public class CSVLexer extends Lexer {
         try {
             int _type = QuotedValue;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // CSV.g:30:3: ( '\"' ( '\"\"' |~ '\"' )* '\"' )
-            // CSV.g:30:6: '\"' ( '\"\"' |~ '\"' )* '\"'
+            // CSV.g:37:3: ( '\"' ( '\"\"' |~ '\"' )* '\"' )
+            // CSV.g:37:6: '\"' ( '\"\"' |~ '\"' )* '\"'
             {
             match('\"'); 
 
-            // CSV.g:30:10: ( '\"\"' |~ '\"' )*
+            // CSV.g:37:10: ( '\"\"' |~ '\"' )*
             loop4:
             do {
                 int alt4=3;
@@ -213,7 +213,7 @@ public class CSVLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // CSV.g:30:11: '\"\"'
+            	    // CSV.g:37:11: '\"\"'
             	    {
             	    match("\"\""); 
 
@@ -222,7 +222,7 @@ public class CSVLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // CSV.g:30:18: ~ '\"'
+            	    // CSV.g:37:18: ~ '\"'
             	    {
             	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '\uFFFF') ) {
             	        input.consume();

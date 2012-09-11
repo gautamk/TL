@@ -1,3 +1,0 @@
-#!/bin/bash
-
-java -cp antlr-3.4-complete.jar:. Main

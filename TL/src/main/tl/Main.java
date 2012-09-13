@@ -1,5 +1,6 @@
+package tl;
 import org.antlr.runtime.*;  
-  
+import tl.parser.*;  
 public class Main {  
   public static void main(String[] args) throws Exception {  
     // create an instance of the lexer  

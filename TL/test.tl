@@ -1,3 +1,2 @@
-aaa = 1.333 + 'a\'b"'; 
-b = /* comment 1 */ aaa^aaa; 
-println('b=' + b); // comment 2
+a = 2 + 5; 
+b = a * 2; 

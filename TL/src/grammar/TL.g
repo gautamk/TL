@@ -1,122 +1,169 @@
 grammar TL;
 
-options{
+options {
   output=AST;
 }
 
-@parser::header{
+tokens {
+  BLOCK;
+  RETURN;
+  STATEMENTS;
+  ASSIGNMENT;
+  FUNC_CALL;
+  EXP;
+  EXP_LIST;
+  ID_LIST;
+  IF;
+  TERNARY;
+  UNARY_MIN;
+  NEGATE;
+  FUNCTION;
+  INDEXES;
+  LIST;
+  LOOKUP;
+}
+
+@parser::header {
   package tl.parser;
 }
 
-@lexer::header{
+@lexer::header {
   package tl.parser;
 }
+
 parse
-  :  block EOF
+  :  block EOF -> block
   ;
+
 block
-  : (statement | functionDecl) * (Return expression ';')?
+  :  (statement | functionDecl)* (Return expression ';')? 
+     -> ^(BLOCK ^(STATEMENTS statement*) ^(RETURN expression?))
   ;
+
 statement
-  : assignment ';'
-  | functionCall ';'
-  | ifStatement
-  | forStatement
-  | whileStatement
+  :  assignment ';'   -> assignment
+  |  functionCall ';' -> functionCall
+  |  ifStatement
+  |  forStatement
+  |  whileStatement
   ;
-functionDecl
-  : Def Identifier '(' idList? ')' block End
-  ;
-idList
-  : Identifier (',' Identifier)*
-  ;
+
 assignment
-  : Identifier indexes? '=' expression
-  ;
-indexes
-  : ('[' expression ']')+
-  ;
-expression
-  : condExpr
-  ;
-condExpr
-  :  orExpr ( '?' expression ':' expression
-            | In expression
-            )?
-  ;
-orExpr 
-  : andExpr ('||' andExpr)*
-  ;
-andExpr
-  : equExpr ('&&' equExpr)*
-  ;
-equExpr
-  : relExpr (('==' | '!=') relExpr)*
-  ;
-relExpr
-  : addExpr (('>=' | '<=' | '>' | '<') addExpr)*
-  ;
-addExpr
-  : mulExpr (('+' | '-') mulExpr)*
-  ;
-mulExpr
-  : powExpr (('*' | '/' | '%') powExpr)*
-  ;
-powExpr
-  : unaryExpr ( '^' unaryExpr)*
-  ;
-unaryExpr
-  : '-' atom
-  | '!' atom
-  |     atom
-  ;
-atom
-  : Null
-  | Number
-  | Bool
-  | lookup
-  ;
-lookup
-  : functionCall indexes?
-  | '(' expression ')' indexes?
-  | list indexes?
-  | Identifier indexes?
-  | String indexes?
-  ;
-list
-  : '[' exprList? ']'
-  ;
-exprList
-  : expression ( ',' expression)*
+  :  Identifier indexes? '=' expression 
+     -> ^(ASSIGNMENT Identifier indexes? expression)
   ;
 
 functionCall
-  : Identifier  '(' exprList? ')'
-  | Println     '(' expression? ')'
-  | Print       '(' expression ')'
-  | Assert      '(' expression ')'
-  | Size        '(' expression ')'
+  :  Identifier '(' exprList? ')' -> ^(FUNC_CALL Identifier exprList?)
+  |  Println '(' expression? ')'  -> ^(FUNC_CALL Println expression?)
+  |  Print '(' expression ')'     -> ^(FUNC_CALL Print expression)
+  |  Assert '(' expression ')'    -> ^(FUNC_CALL Assert expression)
+  |  Size '(' expression ')'      -> ^(FUNC_CALL Size expression)
   ;
 
 ifStatement
-  : ifStat elseIfStat* elseStat? End
+  :  ifStat elseIfStat* elseStat? End -> ^(IF ifStat elseIfStat* elseStat?)
   ;
 
 ifStat
-  : If expression Do block
+  :  If expression Do block -> ^(EXP expression block)
   ;
+
 elseIfStat
-  : Else If expression Do block
+  :  Else If expression Do block -> ^(EXP expression block)
   ;
+
 elseStat
-  : Else Do block
+  :  Else Do block -> ^(EXP block)
+  ;
+
+functionDecl
+  :  Def Identifier '(' idList? ')' block End {/* implemented later */}
   ;
 
 forStatement
-  : For Identifier '=' expression To expression Do block End
+  :  For Identifier '=' expression To expression Do block End 
+     -> ^(For Identifier expression expression block)
   ;
+
 whileStatement
-  : While expression Do block End
+  :  While expression Do block End -> ^(While expression block)
+  ;
+
+idList
+  :  Identifier (',' Identifier)* -> ^(ID_LIST Identifier+)
+  ;
+
+exprList
+  :  expression (',' expression)* -> ^(EXP_LIST expression+)
+  ;
+
+expression
+  :  condExpr
+  ;
+
+condExpr
+  :  (orExpr -> orExpr) 
+     ( '?' a=expression ':' b=expression -> ^(TERNARY orExpr $a $b)
+     | In expression                     -> ^(In orExpr expression)
+     )?
+  ;
+
+orExpr
+  :  andExpr ('||'^ andExpr)*
+  ;
+
+andExpr
+  :  equExpr ('&&'^ equExpr)*
+  ;
+
+equExpr
+  :  relExpr (('==' | '!=')^ relExpr)*
+  ;
+
+relExpr
+  :  addExpr (('>=' | '<=' | '>' | '<')^ addExpr)*
+  ;
+
+addExpr
+  :  mulExpr (('+' | '-')^ mulExpr)*
+  ;
+
+mulExpr
+  :  powExpr (('*' | '/' | '%')^ powExpr)*
+  ;
+
+powExpr
+  :  unaryExpr ('^'^ unaryExpr)*
+  ;
+  
+unaryExpr
+  :  '-' atom -> ^(UNARY_MIN atom)
+  |  '!' atom -> ^(NEGATE atom)
+  |  atom
+  ;
+
+atom
+  :  Number
+  |  Bool
+  |  Null
+  |  lookup
+  ;
+
+list
+  :  '[' exprList? ']' -> ^(LIST exprList?)
+  ;
+
+lookup
+  :  functionCall indexes?       -> ^(LOOKUP functionCall indexes?)
+  |  list indexes?               -> ^(LOOKUP list indexes?)
+  |  Identifier indexes?         -> ^(LOOKUP Identifier indexes?)
+  |  String indexes?             -> ^(LOOKUP String indexes?)
+  |  '(' expression ')' indexes? -> ^(LOOKUP expression indexes?)
+  ;
+
+indexes
+  :  ('[' expression ']')+ -> ^(INDEXES expression+)
   ;
 
 Println  : 'println';
@@ -179,8 +226,8 @@ String
 @after {
   setText(getText().substring(1, getText().length()-1).replaceAll("\\\\(.)", "$1"));
 }
-  :  '"'  (~('"' | '\\')  | '\\' .)* '"' 
-  |  '\'' (~('\'' | '\\') | '\\' .)* '\'' 
+  :  '"'  (~('"' | '\\')  | '\\' ('\\' | '"'))* '"' 
+  |  '\'' (~('\'' | '\\') | '\\' ('\\' | '\''))* '\''
   ;
 
 Comment
